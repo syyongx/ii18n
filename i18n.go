@@ -49,8 +49,11 @@ func NewI18N(config map[string]Config) *I18N {
 		if conf.OriginalLang == "" {
 			conf.OriginalLang = DefaultOriginalLang
 		}
+		if len(conf.OriginalLang) < 2 {
+			panic("Config OriginalLang length cannot be less than 2")
+		}
 		if conf.BasePath == "" {
-			panic("Config SourceKind is illegal")
+			panic("Config BasePath is illegal")
 		}
 		if conf.FileMap == nil {
 			panic("Config FileMap is illegal")
