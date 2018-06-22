@@ -78,8 +78,8 @@ func (ms *MessageSource) GetMsgFilePath(category string, lang string) string {
 // If translation for specific locale code such as `en-US` isn't found it
 // tries more generic `en`. When both are present, the `en-US` messages will be merged
 // over `en`. See [[loadFallbackTMsgs]] for details.
-// If the lang is less specific than [[sourceLang]], the method will try to
-// load the messages for [[sourceLang]]. For example: [[sourceLang]] is `en-GB`,
+// If the lang is less specific than [[originalLang]], the method will try to
+// load the messages for [[originalLang]]. For example: [[originalLang]] is `en-GB`,
 // language is `en`. The method will load the messages for `en` and merge them over `en-GB`.
 func (ms *MessageSource) LoadMsgs(category string, lang string) (TMsgs, error) {
 	msgFile := ms.GetMsgFilePath(category, lang)
