@@ -9,7 +9,7 @@ func TestTranslate(t *testing.T) {
 	config := map[string]Config{
 		"app": Config{
 			SourceNewFunc: NewJsonSource,
-			SourceLang:    "en-Us",
+			OriginalLang:  "en-US",
 			BasePath:      "./test",
 			FileMap: map[string]string{
 				"app":   "app.json",

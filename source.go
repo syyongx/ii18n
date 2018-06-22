@@ -19,7 +19,8 @@ type Source interface {
 
 // MessageSource
 type MessageSource struct {
-	SourceLang       string
+	// string the language that the original messages are in
+	OriginalLang     string
 	ForceTranslation bool
 	BasePath         string
 	FileMap          map[string]string
@@ -31,7 +32,7 @@ type MessageSource struct {
 
 // translate
 func (ms *MessageSource) Translate(category string, message string, lang string) (string, error) {
-	if ms.ForceTranslation || lang != ms.SourceLang {
+	if ms.ForceTranslation || lang != ms.OriginalLang {
 		return ms.TranslateMsg(category, message, lang)
 	}
 	return "", nil
@@ -87,11 +88,11 @@ func (ms *MessageSource) LoadMsgs(category string, lang string) (TMsgs, error) {
 		return nil, err
 	}
 	fbLang := lang[0:2]
-	fbSourceLang := ms.SourceLang[0:2]
+	fbOriginalLang := ms.OriginalLang[0:2]
 	if lang != fbLang {
 		msgs, err = ms.LoadFallbackMsgs(category, fbLang, msgs, msgFile)
-	} else if lang == fbSourceLang {
-		msgs, err = ms.LoadFallbackMsgs(category, ms.SourceLang, msgs, msgFile)
+	} else if lang == fbOriginalLang {
+		msgs, err = ms.LoadFallbackMsgs(category, ms.OriginalLang, msgs, msgFile)
 	} else {
 		if msgs == nil {
 			return nil, errors.New("the message file for category " + category + " does not exist: " + msgFile)
@@ -111,8 +112,8 @@ func (ms *MessageSource) LoadFallbackMsgs(category string, fallbackLang string, 
 	fbMsgFile := ms.GetMsgFilePath(category, fallbackLang)
 	fbMsgs, _ := ms.loadFunc(fbMsgFile)
 	if msgs == nil && fbMsgs == nil &&
-		fallbackLang != ms.SourceLang &&
-		fallbackLang != ms.SourceLang[0:2] {
+		fallbackLang != ms.OriginalLang &&
+		fallbackLang != ms.OriginalLang[0:2] {
 		return nil, errors.New("The message file for category " + category + " does not exist: " + originalMsgFile + " Fallback file does not exist as well: " + fbMsgFile)
 	} else if msgs == nil {
 		return fbMsgs, nil

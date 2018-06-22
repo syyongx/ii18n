@@ -12,7 +12,7 @@ type JsonSource struct {
 
 func NewJsonSource(conf *Config) Source {
 	s := &JsonSource{}
-	s.SourceLang = conf.SourceLang
+	s.OriginalLang = conf.OriginalLang
 	s.BasePath = conf.BasePath
 	s.ForceTranslation = conf.ForceTranslation
 	s.FileMap = conf.FileMap

@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-var DefaultSourceLang = "en-US"
+var DefaultOriginalLang = "en-US"
 var Translator *I18N
 
 // translate.
@@ -23,7 +23,7 @@ func T(category string, message string, params map[string]string, lang string) s
 // Config
 type Config struct {
 	SourceNewFunc    func(*Config) Source
-	SourceLang       string
+	OriginalLang     string
 	ForceTranslation bool
 	BasePath         string
 	FileMap          map[string]string
@@ -46,8 +46,8 @@ func NewI18N(config map[string]Config) *I18N {
 		if conf.SourceNewFunc == nil {
 			panic("Config SourceNewFunc is illegal")
 		}
-		if conf.SourceLang == "" {
-			conf.SourceLang = DefaultSourceLang
+		if conf.OriginalLang == "" {
+			conf.OriginalLang = DefaultOriginalLang
 		}
 		if conf.BasePath == "" {
 			panic("Config SourceKind is illegal")
@@ -64,10 +64,10 @@ func NewI18N(config map[string]Config) *I18N {
 
 // translate
 func (i *I18N) translate(category string, message string, params map[string]string, lang string) string {
-	source, sourceLang := i.getSource(category)
-	translation, err := source.Translate(category, message, lang)
+	s, ol := i.getSource(category)
+	translation, err := s.Translate(category, message, lang)
 	if err != nil || translation == "" {
-		return i.format(message, params, sourceLang)
+		return i.format(message, params, ol)
 	}
 	return i.format(translation, params, lang)
 }
@@ -104,7 +104,7 @@ func (i *I18N) getSource(category string) (Source, string) {
 		if val.source == nil {
 			i.Translations[prefix].source = i.Translations[prefix].SourceNewFunc(i.Translations[prefix])
 		}
-		return i.Translations[prefix].source, i.Translations[prefix].SourceLang
+		return i.Translations[prefix].source, i.Translations[prefix].OriginalLang
 	}
 	panic("Unable to locate message source for category " + category + ".")
 }
