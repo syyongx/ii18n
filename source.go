@@ -42,8 +42,10 @@ func (ms *MessageSource) Translate(category string, message string, lang string)
 func (ms *MessageSource) TranslateMsg(category string, message string, lang string) (string, error) {
 	cates := strings.Split(category, ".")
 	key := cates[0] + "/" + lang + "/" + cates[1]
+
 	ms.mutex.RLock()
 	defer ms.mutex.RUnlock()
+
 	if _, ok := ms.messages[key]; !ok {
 		val, err := ms.LoadMsgs(category, lang)
 		if err != nil {
@@ -120,6 +122,7 @@ func (ms *MessageSource) LoadFallbackMsgs(category string, fallbackLang string, 
 	} else if fbMsgs != nil {
 		ms.mutex.Lock()
 		defer ms.mutex.Unlock()
+
 		for key, val := range fbMsgs {
 			v, ok := msgs[key]
 			if val != "" && (!ok || v == "") {
