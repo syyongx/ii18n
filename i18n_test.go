@@ -8,8 +8,9 @@ import (
 func TestTranslate(t *testing.T) {
 	config := map[string]Config{
 		"app": Config{
-			SourceLang: "en-Us",
-			BasePath:   "./test",
+			SourceNewFunc: NewJsonSource,
+			SourceLang:    "en-Us",
+			BasePath:      "./test",
 			FileMap: map[string]string{
 				"app":   "app.json",
 				"error": "error.json",

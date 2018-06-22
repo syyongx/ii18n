@@ -5,15 +5,16 @@ import (
 	"errors"
 )
 
-var patternNumeric = "(?:[-+]?(?:[0-9]+))?(?:\\.[0-9]*)?(?:[eE][\\+\\-]?(?:[0-9]+))?$"
-
+// Formatter
 type Formatter struct {
 }
 
+// New Formatter
 func NewFormatter() *Formatter {
 	return &Formatter{}
 }
 
+// format message
 func (f *Formatter) format(pattern string, params map[string]string, lang string) (string, error) {
 	tokens := f.tokenizePattern(pattern)
 	if tokens == nil {
@@ -37,26 +38,26 @@ func (f *Formatter) tokenizePattern(pattern string) []string {
 			break
 		}
 		open := strings.Index(pattern[pos+1:], "{")
-		close := strings.Index(pattern[pos+1:], "}")
-		if open == -1 && close == -1 {
+		closing := strings.Index(pattern[pos+1:], "}")
+		if open == -1 && closing == -1 {
 			break
 		}
 		if open == -1 {
 			open = length
 		}
-		if close > open {
+		if closing > open {
 			depth++
 			pos = open
 		} else {
 			depth--
-			pos = close
+			pos = closing
 		}
 		if depth == 0 {
 			start = pos + 1
 			tokens = append(tokens, pattern[start:open])
 			start = open
 		}
-		if depth != 0 && (open == -1 || close == -1) {
+		if depth != 0 && (open == -1 || closing == -1) {
 			break
 		}
 	}

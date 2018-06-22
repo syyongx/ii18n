@@ -3,6 +3,7 @@ package ii18n
 import (
 	"strings"
 	"errors"
+	"sync"
 )
 
 type TMsgs map[string]string
@@ -25,6 +26,7 @@ type MessageSource struct {
 	fileSuffix       string
 	loadFunc         func(filename string) (TMsgs, error)
 	messages         map[string]TMsgs
+	mutex            sync.RWMutex
 }
 
 // translate
@@ -39,6 +41,8 @@ func (ms *MessageSource) Translate(category string, message string, lang string)
 func (ms *MessageSource) TranslateMsg(category string, message string, lang string) (string, error) {
 	cates := strings.Split(category, ".")
 	key := cates[0] + "/" + lang + "/" + cates[1]
+	ms.mutex.RLock()
+	defer ms.mutex.RUnlock()
 	if _, ok := ms.messages[key]; !ok {
 		val, err := ms.LoadMsgs(category, lang)
 		if err != nil {
@@ -82,11 +86,11 @@ func (ms *MessageSource) LoadMsgs(category string, lang string) (TMsgs, error) {
 	if err != nil {
 		return nil, err
 	}
-	fallbackLang := lang[0:2]
-	fallbackSourceLang := ms.SourceLang[0:2]
-	if lang != fallbackLang {
-		msgs, err = ms.LoadFallbackMsgs(category, fallbackLang, msgs, msgFile)
-	} else if lang == fallbackSourceLang {
+	fbLang := lang[0:2]
+	fbSourceLang := ms.SourceLang[0:2]
+	if lang != fbLang {
+		msgs, err = ms.LoadFallbackMsgs(category, fbLang, msgs, msgFile)
+	} else if lang == fbSourceLang {
 		msgs, err = ms.LoadFallbackMsgs(category, ms.SourceLang, msgs, msgFile)
 	} else {
 		if msgs == nil {
@@ -104,19 +108,21 @@ func (ms *MessageSource) LoadMsgs(category string, lang string) (TMsgs, error) {
 // If translation for specific locale code such as `en-US` isn't found it
 // tries more generic `en`. When both are present, the `en-US` messages will be merged
 func (ms *MessageSource) LoadFallbackMsgs(category string, fallbackLang string, msgs TMsgs, originalMsgFile string) (TMsgs, error) {
-	fallbackMsgFile := ms.GetMsgFilePath(category, fallbackLang)
-	fallbackMsgs, _ := ms.loadFunc(fallbackMsgFile)
-	if msgs == nil && fallbackMsgs == nil &&
+	fbMsgFile := ms.GetMsgFilePath(category, fallbackLang)
+	fbMsgs, _ := ms.loadFunc(fbMsgFile)
+	if msgs == nil && fbMsgs == nil &&
 		fallbackLang != ms.SourceLang &&
 		fallbackLang != ms.SourceLang[0:2] {
-		return nil, errors.New("The message file for category " + category + " does not exist: " + originalMsgFile + " Fallback file does not exist as well: " + fallbackMsgFile)
+		return nil, errors.New("The message file for category " + category + " does not exist: " + originalMsgFile + " Fallback file does not exist as well: " + fbMsgFile)
 	} else if msgs == nil {
-		return fallbackMsgs, nil
-	} else if fallbackMsgs != nil {
-		for key, val := range fallbackMsgs {
+		return fbMsgs, nil
+	} else if fbMsgs != nil {
+		ms.mutex.Lock()
+		defer ms.mutex.Unlock()
+		for key, val := range fbMsgs {
 			v, ok := msgs[key]
 			if val != "" && (!ok || v == "") {
-				msgs[key] = fallbackMsgs[key]
+				msgs[key] = val
 			}
 		}
 	}

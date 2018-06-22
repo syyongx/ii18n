@@ -3,15 +3,16 @@ package ii18n
 import (
 	"strings"
 	"regexp"
+	"sync"
 )
 
 var DefaultSourceLang = "en-US"
 var Translator *I18N
 
 // translate.
-// 1) T('common', 'hot', [], 'zh_cn'); // default app.common
-// 2) T('app.common', 'hot', [], 'zh_cn'); // result same to 1)
-// 3) T('msg.a', 'hello', ['{foo}' => 'bar', '{key}' => 'val'], 'ja_jp');
+// 1. T('common', 'hot', [], 'zh-CN') // default app.common
+// 2. T('app.common', 'hot', [], 'zh-CN') // result same to 1.
+// 3. T('msg.a', 'hello', ['{foo}' => 'bar', '{key}' => 'val'] 'ja-JP')
 func T(category string, message string, params map[string]string, lang string) string {
 	if strings.Index(category, ".") == -1 {
 		category = "app." + category
@@ -19,19 +20,21 @@ func T(category string, message string, params map[string]string, lang string) s
 	return Translator.translate(category, message, params, lang)
 }
 
+// Config
 type Config struct {
+	SourceNewFunc    func(*Config) Source
 	SourceLang       string
+	ForceTranslation bool
 	BasePath         string
 	FileMap          map[string]string
-	ForceTranslation bool
-	// message source
-	source Source
+	source           Source
 }
 
 // I18N
 type I18N struct {
 	Translations map[string]*Config
 	formatter    Formatter
+	mutex        sync.RWMutex
 }
 
 // New I18N
@@ -40,14 +43,17 @@ func NewI18N(config map[string]Config) *I18N {
 		Translations: make(map[string]*Config),
 	}
 	for key, conf := range config {
+		if conf.SourceNewFunc == nil {
+			panic("Config SourceNewFunc is illegal")
+		}
 		if conf.SourceLang == "" {
 			conf.SourceLang = DefaultSourceLang
 		}
 		if conf.BasePath == "" {
-			panic("BasePath config invalid")
+			panic("Config SourceKind is illegal")
 		}
 		if conf.FileMap == nil {
-			panic("FileMap config invalid")
+			panic("Config FileMap is illegal")
 		}
 		if _, ok := Translator.Translations[key]; !ok {
 			Translator.Translations[key] = &conf
@@ -58,10 +64,10 @@ func NewI18N(config map[string]Config) *I18N {
 
 // translate
 func (i *I18N) translate(category string, message string, params map[string]string, lang string) string {
-	s := i.getSource(category)
-	translation, err := s.Translate(category, message, lang)
+	source, sourceLang := i.getSource(category)
+	translation, err := source.Translate(category, message, lang)
 	if err != nil || translation == "" {
-		return i.format(message, params, s.(*JsonSource).SourceLang)
+		return i.format(message, params, sourceLang)
 	}
 	return i.format(translation, params, lang)
 }
@@ -90,13 +96,15 @@ func (i *I18N) getFormatter(category string) Formatter {
 }
 
 // getSource Get the message source for the given category.
-func (i *I18N) getSource(category string) Source {
+func (i *I18N) getSource(category string) (Source, string) {
 	prefix := strings.Split(category, ".")[0]
 	if val, ok := i.Translations[prefix]; ok {
+		i.mutex.Lock()
+		defer i.mutex.Unlock()
 		if val.source == nil {
-			i.Translations[prefix].source = NewJsonSource(i.Translations[prefix])
+			i.Translations[prefix].source = i.Translations[prefix].SourceNewFunc(i.Translations[prefix])
 		}
-		return i.Translations[prefix].source
+		return i.Translations[prefix].source, i.Translations[prefix].SourceLang
 	}
 	panic("Unable to locate message source for category " + category + ".")
 }
