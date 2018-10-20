@@ -1,8 +1,8 @@
 package ii18n
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestTranslate(t *testing.T) {

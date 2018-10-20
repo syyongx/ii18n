@@ -1,8 +1,8 @@
 package ii18n
 
 import (
-	"strings"
 	"regexp"
+	"strings"
 	"sync"
 )
 
