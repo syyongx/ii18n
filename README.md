@@ -27,5 +27,11 @@ func main() {
 }
 ```
 
+## Apis
+```go
+NewI18N(config map[string]Config) *I18N
+T(category string, message string, params map[string]string, lang string) string
+```
+
 ## LICENSE
 ii18n source code is licensed under the [MIT](https://github.com/syyongx/ii18n/blob/master/LICENSE) Licence.
