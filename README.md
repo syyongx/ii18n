@@ -6,22 +6,25 @@ Go i18n library.
 go get github.com/syyongx/ii18n
 ```
 
-## Usage Instructions
-```
-config := map[string]Config{
-	"app": Config{
-		SourceNewFunc: NewJSONSource,
-		OriginalLang:  "en-US",
-		BasePath:      "./testdata",
-		FileMap: map[string]string{
-			"app":   "app.json",
-			"error": "error.json",
+## Quick Start
+```go
+import github.com/syyongx/ii18n
+
+func main() {
+	config := map[string]Config{
+		"app": Config{
+			SourceNewFunc: NewJSONSource,
+			OriginalLang:  "en-US",
+			BasePath:      "./testdata",
+			FileMap: map[string]string{
+				"app":   "app.json",
+				"error": "error.json",
+			},
 		},
-	},
+	}
+	NewI18N(config)
+	message := T("app", "hello", nil, "zh-CN")
 }
-NewI18N(config)
-message := T("app", "hello", nil, "zh-CN")
-fmt.Println(message)
 ```
 
 ## LICENSE
