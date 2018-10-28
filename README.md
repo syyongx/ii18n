@@ -1,5 +1,5 @@
 # ii18n
-go i18n tool.
+Go i18n library.
 
 ## Download & Install
 ```shell
