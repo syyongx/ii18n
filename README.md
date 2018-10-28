@@ -11,19 +11,19 @@ go get github.com/syyongx/ii18n
 import github.com/syyongx/ii18n
 
 func main() {
-	config := map[string]Config{
-		"app": Config{
-			SourceNewFunc: NewJSONSource,
-			OriginalLang:  "en-US",
-			BasePath:      "./testdata",
-			FileMap: map[string]string{
-				"app":   "app.json",
-				"error": "error.json",
-			},
-		},
-	}
-	NewI18N(config)
-	message := T("app", "hello", nil, "zh-CN")
+    config := map[string]Config{
+        "app": Config{
+            SourceNewFunc: NewJSONSource,
+            OriginalLang:  "en-US",
+            BasePath:      "./testdata",
+            FileMap: map[string]string{
+                "app":   "app.json",
+                "error": "error.json",
+            },
+        },
+    }
+    NewI18N(config)
+    message := T("app", "hello", nil, "zh-CN")
 }
 ```
 
