@@ -6,10 +6,12 @@ import (
 	"sync"
 )
 
+// DefaultOriginalLang default original language
 var DefaultOriginalLang = "en-US"
+// Translator translator
 var Translator *I18N
 
-// translate.
+// T translate.
 // 1. T('common', 'hot', [], 'zh-CN') // default app.common
 // 2. T('app.common', 'hot', [], 'zh-CN') // result same to 1.
 // 3. T('msg.a', 'hello', ['{foo}' => 'bar', '{key}' => 'val'] 'ja-JP')
@@ -20,7 +22,7 @@ func T(category string, message string, params map[string]string, lang string) s
 	return Translator.translate(category, message, params, lang)
 }
 
-// Config
+// Config config
 type Config struct {
 	SourceNewFunc    func(*Config) Source
 	OriginalLang     string
@@ -30,14 +32,14 @@ type Config struct {
 	source           Source
 }
 
-// I18N
+// I18N i18n
 type I18N struct {
 	Translations map[string]*Config
 	formatter    Formatter
 	mutex        sync.RWMutex
 }
 
-// New I18N
+// NewI18N returns an instance of I18N.
 func NewI18N(config map[string]Config) *I18N {
 	Translator = &I18N{
 		Translations: make(map[string]*Config),
