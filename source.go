@@ -6,6 +6,7 @@ import (
 	"sync"
 )
 
+// TMsgs type messages
 type TMsgs map[string]string
 
 // Source interface
@@ -17,7 +18,7 @@ type Source interface {
 	LoadFallbackMsgs(category string, fallbackLang string, msgs TMsgs, originalMsgFile string) (TMsgs, error)
 }
 
-// MessageSource
+// MessageSource MessageSource
 type MessageSource struct {
 	// string the language that the original messages are in
 	OriginalLang     string
@@ -30,7 +31,7 @@ type MessageSource struct {
 	mutex            sync.RWMutex
 }
 
-// translate
+// Translate translate
 func (ms *MessageSource) Translate(category string, message string, lang string) (string, error) {
 	if ms.ForceTranslation || lang != ms.OriginalLang {
 		return ms.TranslateMsg(category, message, lang)
@@ -38,7 +39,7 @@ func (ms *MessageSource) Translate(category string, message string, lang string)
 	return "", nil
 }
 
-// translate
+// TranslateMsg translate message
 func (ms *MessageSource) TranslateMsg(category string, message string, lang string) (string, error) {
 	cates := strings.Split(category, ".")
 	key := cates[0] + "/" + lang + "/" + cates[1]
@@ -61,7 +62,7 @@ func (ms *MessageSource) TranslateMsg(category string, message string, lang stri
 	return "", nil
 }
 
-// Get messages file path.
+// GetMsgFilePath Get messages file path.
 func (ms *MessageSource) GetMsgFilePath(category string, lang string) string {
 	suffix := strings.Split(category, ".")[1]
 	path := ms.BasePath + "/" + lang + "/"
@@ -76,7 +77,7 @@ func (ms *MessageSource) GetMsgFilePath(category string, lang string) string {
 	return path
 }
 
-// Loads the message translation for the specified $language and $category.
+// LoadMsgs Loads the message translation for the specified $language and $category.
 // If translation for specific locale code such as `en-US` isn't found it
 // tries more generic `en`. When both are present, the `en-US` messages will be merged
 // over `en`. See [[loadFallbackTMsgs]] for details.
@@ -107,7 +108,7 @@ func (ms *MessageSource) LoadMsgs(category string, lang string) (TMsgs, error) {
 	return msgs, nil
 }
 
-// Loads the message translation for the specified $language and $category.
+// LoadFallbackMsgs Loads the message translation for the specified $language and $category.
 // If translation for specific locale code such as `en-US` isn't found it
 // tries more generic `en`. When both are present, the `en-US` messages will be merged
 func (ms *MessageSource) LoadFallbackMsgs(category string, fallbackLang string, msgs TMsgs, originalMsgFile string) (TMsgs, error) {
@@ -134,7 +135,7 @@ func (ms *MessageSource) LoadFallbackMsgs(category string, fallbackLang string, 
 	return msgs, nil
 }
 
-// Get messages file path.
+// LoadMsgsFromFile Get messages file path.
 func LoadMsgsFromFile(filename string) (TMsgs, error) {
 	return nil, nil
 }

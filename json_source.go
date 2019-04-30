@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-// Type JSONSource
+// JSONSource JSONSource
 type JSONSource struct {
 	MessageSource
 }
 
-// New JSONSource
+// NewJSONSource New JSONSource
 func NewJSONSource(conf *Config) Source {
 	s := &JSONSource{}
 	s.OriginalLang = conf.OriginalLang
@@ -25,7 +25,7 @@ func NewJSONSource(conf *Config) Source {
 	return s
 }
 
-// Get messages file path.
+// GetMsgFilePath Get messages file path.
 func (js *JSONSource) GetMsgFilePath(category string, lang string) string {
 	suffix := strings.Split(category, ".")[1]
 	path := js.BasePath + "/" + lang + "/"
@@ -37,7 +37,7 @@ func (js *JSONSource) GetMsgFilePath(category string, lang string) string {
 	return path
 }
 
-// Get messages file path.
+// loadMsgsFromJSONFile Get messages file path.
 func loadMsgsFromJSONFile(filename string) (TMsgs, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 
 func TestTranslate(t *testing.T) {
 	config := map[string]Config{
-		"app": Config{
+		"app": {
 			SourceNewFunc: NewJSONSource,
 			OriginalLang:  "en-US",
 			BasePath:      "./testdata",

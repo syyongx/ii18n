@@ -8,6 +8,7 @@ import (
 
 // DefaultOriginalLang default original language
 var DefaultOriginalLang = "en-US"
+
 // Translator translator
 var Translator *I18N
 

@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-// Formatter
+// Formatter Formatter
 type Formatter struct {
 }
 
-// New Formatter
+// NewFormatter New Formatter
 func NewFormatter() *Formatter {
 	return &Formatter{}
 }
@@ -24,14 +24,14 @@ func (f *Formatter) format(pattern string, params map[string]string, lang string
 	return strings.Join(tokens, ""), nil
 }
 
-// Tokenizes a pattern by separating normal text from replaceable patterns.
+// Tokenize a pattern by separating normal text from replaceable patterns.
 func (f *Formatter) tokenizePattern(pattern string) []string {
 	pos := strings.Index(pattern, "{")
 	if pos == -1 {
 		return []string{pattern}
 	}
 	//pr := []rune(pattern)
-	start, depth, length := pos, 1, len(pattern)
+	depth, length := 1, len(pattern)
 	tokens := []string{pattern[:pos]}
 	for {
 		if pos+1 > length {
@@ -53,9 +53,7 @@ func (f *Formatter) tokenizePattern(pattern string) []string {
 			pos = closing
 		}
 		if depth == 0 {
-			start = pos + 1
-			tokens = append(tokens, pattern[start:open])
-			start = open
+			tokens = append(tokens, pattern[pos+1:open])
 		}
 		if depth != 0 && (open == -1 || closing == -1) {
 			break
