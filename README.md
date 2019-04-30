@@ -1,4 +1,12 @@
 # ii18n
+
+[![GoDoc](https://godoc.org/github.com/syyongx/ii18n?status.svg)](https://godoc.org/github.com/syyongx/ii18n)
+[![Go Report Card](https://goreportcard.com/badge/github.com/syyongx/ii18n)](https://goreportcard.com/report/github.com/syyongx/ii18n)
+[![MIT licensed][3]][4]
+
+[3]: https://img.shields.io/badge/license-MIT-blue.svg
+[4]: LICENSE
+
 Go i18n library.
 
 ## Download & Install
