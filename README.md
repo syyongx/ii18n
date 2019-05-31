@@ -1,4 +1,4 @@
-# ii18n
+# II18N
 
 [![GoDoc](https://godoc.org/github.com/syyongx/ii18n?status.svg)](https://godoc.org/github.com/syyongx/ii18n)
 [![Go Report Card](https://goreportcard.com/badge/github.com/syyongx/ii18n)](https://goreportcard.com/report/github.com/syyongx/ii18n)
@@ -42,4 +42,4 @@ T(category string, message string, params map[string]string, lang string) string
 ```
 
 ## LICENSE
-ii18n source code is licensed under the [MIT](https://github.com/syyongx/ii18n/blob/master/LICENSE) Licence.
+II18N source code is licensed under the [MIT](https://github.com/syyongx/ii18n/blob/master/LICENSE) Licence.
